@@ -3,17 +3,30 @@
     <div class="login_box">
       <!-- 头像区域 -->
       <div class="avatar_box">
-        <img src="../assets/logo.png" alt="">
+        <img src="../assets/logo.png" alt="" />
       </div>
       <!-- 登录表单区域 -->
-      <el-form label-width="0px" class="login_form" :model="loginForm" :rules="loginRules" ref="loginFormRef">
+      <el-form
+        label-width="0px"
+        class="login_form"
+        :model="loginForm"
+        :rules="loginRules"
+        ref="loginFormRef"
+      >
         <!-- 用户名 -->
         <el-form-item prop="username">
-          <el-input prefix-icon="iconfont icon-user" v-model="loginForm.username"></el-input>
+          <el-input
+            prefix-icon="iconfont icon-user"
+            v-model="loginForm.username"
+          ></el-input>
         </el-form-item>
         <!-- 密码 -->
         <el-form-item prop="password">
-          <el-input prefix-icon="iconfont icon-3702mima" v-model="loginForm.password" type="password"></el-input>
+          <el-input
+            prefix-icon="iconfont icon-3702mima"
+            v-model="loginForm.password"
+            type="password"
+          ></el-input>
         </el-form-item>
         <!-- 按钮区域 -->
         <el-form-item class="btns">
@@ -30,43 +43,46 @@ export default {
   data() {
     return {
       loginForm: {
-        username:'admin',
-        password:'123456',
+        username: 'admin',
+        password: '123456',
       },
-      // 表单的验证规则对象 
+      // 表单的验证规则对象
       loginRules: {
         // 验证用户名是否合法
-        username:[
-            { required: true, message: '请输入用户名', trigger: 'blur' },
-            { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
-            ],
+        username: [
+          { required: true, message: '请输入用户名', trigger: 'blur' },
+          { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' },
+        ],
         // 验证密码是否合法
-        password:[
-            { required: true, message: '请输入密码', trigger: 'blur' },
-            { min: 6, max: 15, message: '长度在 6 到 15 个字符', trigger: 'blur' }
-        ]
-      }
+        password: [
+          { required: true, message: '请输入密码', trigger: 'blur' },
+          {
+            min: 6,
+            max: 15,
+            message: '长度在 6 到 15 个字符',
+            trigger: 'blur',
+          },
+        ],
+      },
     }
   },
-  methods:{
+  methods: {
     // 点击重置按钮 重置表单
-    resetLoginForm: function() {
-      this.$refs.loginFormRef.resetFields();
+    resetLoginForm: function () {
+      this.$refs.loginFormRef.resetFields()
     },
     // 进行登入的预验证
-    login:function() {
-      this.$refs.loginFormRef.validate( async valid => {
-        if(!valid)
-          return;
-        const {data:res} = await this.$http.post('login', this.loginForm);
-        if(res.meta.status!=200)
-        return this.$message.error("登入失败");
-        this.$message.success("登入成功");
-        window.sessionStorage.setItem('token', res.data.token);
-        this.$router.push("/home");
+    login: function () {
+      this.$refs.loginFormRef.validate(async (valid) => {
+        if (!valid) return
+        const { data: res } = await this.$http.post('login', this.loginForm)
+        if (res.meta.status != 200) return this.$message.error('登入失败')
+        this.$message.success('登入成功')
+        window.sessionStorage.setItem('token', res.data.token)
+        this.$router.push('/home')
       })
-    }
-  }
+    },
+  },
 }
 </script>
 
