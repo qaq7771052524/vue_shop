@@ -65,12 +65,14 @@
               type="danger"
               size="mini"
               icon="el-icon-delete"
+              @click="test"
             ></el-button>
             <el-tooltip content="设置角色" placement="top" :enterable="false">
               <el-button
                 type="warning"
                 size="mini"
                 icon="el-icon-setting"
+                @click="setRole(slotProps.row)"
               ></el-button>
             </el-tooltip>
           </template>
@@ -114,6 +116,25 @@
         <el-button type="primary" @click="addDialog = false">确 定</el-button>
       </span>
     </el-dialog>
+    <el-dialog title="设置角色" :visible.sync="setRoleDialog" width="50%"
+    @close="clearRole"
+    >
+      <p>用户名为 {{ roleList.username }}</p>
+      <p>角色名为 {{ roleList.role_name }}</p>
+      <el-select v-model="selectedRole" placeholder="请选择">
+        <el-option
+          v-for="item in roles"
+          :key="item.id"
+          :label="item.roleName"
+          :value="item.id"
+        >
+        </el-option>
+      </el-select>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="setRoleDialog = false">取 消</el-button>
+        <el-button type="primary" @click="saveRoleInfo">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -121,21 +142,19 @@
 export default {
   data() {
     var chekckEmail = (rule, value, callback) => {
-        const regEmail = /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/;
-        if(regEmail.test(value)) {
-            return callback();
-        }
-        callback(new Error("请输入合法的邮箱"));
-
-    };
+      const regEmail = /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/
+      if (regEmail.test(value)) {
+        return callback()
+      }
+      callback(new Error('请输入合法的邮箱'))
+    }
     var checkMobile = (rule, value, callback) => {
-        const regMobile = /^[1]([3-9])[0-9]{9}$/;
-        if(regMobile.test(value)) {
-            return callback();
-        }
-        callback(new Error("请输入合法的手机号"));
-
-    };
+      const regMobile = /^[1]([3-9])[0-9]{9}$/
+      if (regMobile.test(value)) {
+        return callback()
+      }
+      callback(new Error('请输入合法的手机号'))
+    }
     return {
       queryInfo: {
         query: '',
@@ -170,10 +189,13 @@ export default {
             trigger: 'blur',
           },
         ],
-        email: [{ required: true, message: '请输入邮箱', trigger: 'blur' },{
-            validator:chekckEmail,
-            trigger: 'blur'
-        }],
+        email: [
+          { required: true, message: '请输入邮箱', trigger: 'blur' },
+          {
+            validator: chekckEmail,
+            trigger: 'blur',
+          },
+        ],
         mobile: [
           { required: true, message: '请输入手机', trigger: 'blur' },
           {
@@ -183,11 +205,15 @@ export default {
             trigger: 'blur',
           },
           {
-              validator:checkMobile,
-              trigger: 'blur'
-          }
+            validator: checkMobile,
+            trigger: 'blur',
+          },
         ],
       },
+      setRoleDialog: false,
+      roleList: {},
+      roles: [],
+      selectedRole: '',
     }
   },
   methods: {
@@ -222,8 +248,51 @@ export default {
       this.userList = res.data.users
       console.log(res)
     },
+    setRole: async function (data) {
+      this.setRoleDialog = true
+      this.roleList = data
+      const { data: res } = await this.$http.get('roles')
+      if (res.meta.status !== 200) {
+        return this.$message.error('获取角色列表失败')
+      }
+      this.roles = res.data
+    },
+
+    saveRoleInfo: async function () {
+      if (!this.selectedRole) {
+        return this.$message.error('请选择用户角色')
+      }
+      const { data: res } = await this.$http.put(
+        `users/${this.roleList.id}/role`,
+        {
+          rid: this.selectedRole,
+        }
+      )
+      if (res.meta.status !== 200) {
+        this.$message.error('更新用户角色失败')
+      }
+      this.$message.success('更新用户角色成功')
+      this.getList()
+      console.log(this.roleList)
+      console.log(this.roles);
+      this.setRoleDialog = false
+    },
+    clearRole: function() {
+      this.roleList = {},
+      this.selectedRole = ''
+    }, 
+    test: async function() {
+      const {data:res} = await this.$http.put(`users/500/role`,{
+        rid: '40'
+      })
+      if(res.meta.status!==200) {
+        this.$message("失败")
+      }
+      this.$message.success("成功")
+      this.getList()
+    } 
   },
-  created() {
+  created: function () {
     this.getList()
   },
 }
