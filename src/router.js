@@ -6,6 +6,7 @@ import Welcome from './components/Welcome.vue'
 import Users from './components/user/user.vue'
 import Rights from './components/power/right.vue'
 import Roles from './components/power/role.vue'
+import Cate from './components/good/Cate.vue'
 
 Vue.use(Router)
 
@@ -13,7 +14,15 @@ const router = new Router({
   routes: [
     { path: '/', redirect: '/login' },
     { path: '/login', component: Login },
-    { path: '/home', component: Home ,redirect:'/welcome', children:[{path:'/welcome', component:Welcome}, {path:'/users', component:Users}, {path:'/rights', component:Rights}, {path:'/roles', component:Roles}]},
+    {
+      path: '/home', component: Home, redirect: '/welcome', children: [
+        { path: '/welcome', component: Welcome },
+        { path: '/users', component: Users }, 
+        { path: '/rights', component: Rights },
+        { path: '/roles', component: Roles },
+        { path: '/categories', component: Cate}
+      ]
+    },
   ]
 })
 // 路由导航守卫
