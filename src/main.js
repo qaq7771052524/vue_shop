@@ -17,6 +17,16 @@ axios.interceptors.request.use((config) => {
 Vue.prototype.$http = axios
 axios.defaults.baseURL = 'http://127.0.0.1:8888/api/private/v1/'
 
+Vue.filter("dateFormat", (newVal) => {
+  const d = new Date(newVal)
+  
+  const y = d.getFullYear()
+  const m = d.getMonth()
+  const dd = d.getDay()
+
+  return `${y}--${m}--${dd}`
+})
+
 Vue.config.productionTip = false
 Vue.component('tree-table', TreeTable)
 
